@@ -1,3 +1,11 @@
 <component name="ProjectDictionaryState">
-  <dictionary name="Usuario" />
+  <dictionary name="Usuario">
+    <words>
+      <w>descripcion</w>
+      <w>direccion</w>
+      <w>ubicacion</w>
+      <w>vehiculo</w>
+      <w>vehiculos</w>
+    </words>
+  </dictionary>
 </component>

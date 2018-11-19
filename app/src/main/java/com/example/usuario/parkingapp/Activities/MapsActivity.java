@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import com.example.usuario.parkingapp.R;
 import com.example.usuario.parkingapp.Fragments.MainFragment;
+import com.example.usuario.parkingapp.Services.DataService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -31,6 +32,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        DataService.getInstance().getCocheras();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
             .enableAutoManage(this, this)
@@ -60,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.On
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
-            Log.v("Wiwi", "Solicittando permisos");
+            Log.v("Wiwi", "Solicitando permisos");
         } else {
             Log.v("Wiwi", "Servicio de Ubicacion conectado");
             startLocationServices();

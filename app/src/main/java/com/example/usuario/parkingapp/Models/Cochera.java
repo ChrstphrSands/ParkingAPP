@@ -2,59 +2,71 @@ package com.example.usuario.parkingapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Cochera {
 
-    @SerializedName("descripcion")
-    private String descripcion;
-
-    @SerializedName("longitud")
-    private double longitud;
-
-    @SerializedName("latitud")
-    private double latitud;
-
-    @SerializedName("codigo_postal")
-    private String codigoPostal;
-
-    @SerializedName("foto")
-    private String foto;
-
-    @SerializedName("direccion")
-    private String direccion;
-
-    @SerializedName("nombre")
+    @SerializedName("Nombre")
     private String nombre;
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    @SerializedName("HorarioAtencion")
+    private String horarioAtencion;
+
+    @SerializedName("CocheraEstadoId")
+    private int cocheraEstadoId;
+
+    @SerializedName("Foto")
+    private String foto;
+
+    @SerializedName("Telefono")
+    private String telefono;
+
+    @SerializedName("CodigoPostal")
+    private String codigoPostal;
+
+    @SerializedName("Longitud")
+    private String longitud;
+
+    @SerializedName("Direccion")
+    private String direccion;
+
+    @SerializedName("Descripcion")
+    private String descripcion;
+
+    @SerializedName("Latitud")
+    private String latitud;
+
+    @SerializedName("EmpresaId")
+    private int empresaId;
+
+    @SerializedName("CocheraId")
+    private int cocheraId;
+
+    @SerializedName("Servicio")
+    private List<Servicio> servicios;
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setLongitud(double longitud) {
-        this.longitud = longitud;
+    public void setHorarioAtencion(String horarioAtencion) {
+        this.horarioAtencion = horarioAtencion;
     }
 
-    public double getLongitud() {
-        return longitud;
+    public String getHorarioAtencion() {
+        return horarioAtencion;
     }
 
-    public void setLatitud(double latitud) {
-        this.latitud = latitud;
+    public void setCocheraEstadoId(int cocheraEstadoId) {
+        this.cocheraEstadoId = cocheraEstadoId;
     }
 
-    public double getLatitud() {
-        return latitud;
-    }
-
-    public void setCodigoPostal(String codigoPostal) {
-        this.codigoPostal = codigoPostal;
-    }
-
-    public String getCodigoPostal() {
-        return codigoPostal;
+    public int getCocheraEstadoId() {
+        return cocheraEstadoId;
     }
 
     public void setFoto(String foto) {
@@ -65,6 +77,30 @@ public class Cochera {
         return foto;
     }
 
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setCodigoPostal(String codigoPostal) {
+        this.codigoPostal = codigoPostal;
+    }
+
+    public String getCodigoPostal() {
+        return codigoPostal;
+    }
+
+    public void setLongitud(String longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getLongitud() {
+        return longitud;
+    }
+
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
@@ -73,25 +109,62 @@ public class Cochera {
         return direccion;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setLatitud(String latitud) {
+        this.latitud = latitud;
+    }
+
+    public String getLatitud() {
+        return latitud;
+    }
+
+    public void setEmpresaId(int empresaId) {
+        this.empresaId = empresaId;
+    }
+
+    public int getEmpresaId() {
+        return empresaId;
+    }
+
+    public void setCocheraId(int cocheraId) {
+        this.cocheraId = cocheraId;
+    }
+
+    public int getCocheraId() {
+        return cocheraId;
+    }
+
+    public List<Servicio> getServicios() {
+        return servicios;
+    }
+
+    public void setServicios(List<Servicio> servicios) {
+        this.servicios = servicios;
     }
 
     @Override
     public String toString() {
         return
             "Cochera{" +
-                "descripcion = '" + descripcion + '\'' +
-                ",longitud = '" + longitud + '\'' +
-                ",latitud = '" + latitud + '\'' +
-                ",codigo_postal = '" + codigoPostal + '\'' +
+                "nombre = '" + nombre + '\'' +
+                ",horarioAtencion = '" + horarioAtencion + '\'' +
+                ",cocheraEstadoId = '" + cocheraEstadoId + '\'' +
                 ",foto = '" + foto + '\'' +
+                ",telefono = '" + telefono + '\'' +
+                ",codigoPostal = '" + codigoPostal + '\'' +
+                ",longitud = '" + longitud + '\'' +
                 ",direccion = '" + direccion + '\'' +
-                ",nombre = '" + nombre + '\'' +
+                ",descripcion = '" + descripcion + '\'' +
+                ",latitud = '" + latitud + '\'' +
+                ",empresaId = '" + empresaId + '\'' +
+                ",cocheraId = '" + cocheraId + '\'' +
                 "}";
     }
 }

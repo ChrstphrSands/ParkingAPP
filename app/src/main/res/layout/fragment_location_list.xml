@@ -5,6 +5,5 @@
              android:layout_height="match_parent"
              tools:context=".Fragments.LocationListFragment">
 
-    <include layout="@layout/contect_locations_recycler" />
-
+    <include layout="@layout/contect_locations_recycler"/>
 </FrameLayout>

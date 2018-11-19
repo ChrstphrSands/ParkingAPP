@@ -1,21 +1,25 @@
 package com.example.usuario.parkingapp.Services;
 
 import android.util.Log;
-import com.example.usuario.parkingapp.Api.ParkingApi;
+import com.example.usuario.parkingapp.Api.RetrofitInstance;
+import com.example.usuario.parkingapp.Models.Cliente;
 import com.example.usuario.parkingapp.Models.Cochera;
-import com.example.usuario.parkingapp.Models.Devslopes;
+import com.example.usuario.parkingapp.Models.Reserva;
+import com.example.usuario.parkingapp.Models.Servicio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataService {
     private List<Cochera> cocheraList = new ArrayList<>();
+    private List<Servicio> servicioList = new ArrayList<>();
     private static DataService instance = new DataService();
+
+    private Cliente cliente = new Cliente();
+    RetrofitInstance retrofitInstance = new RetrofitInstance();
 
     public static DataService getInstance() {
         return instance;
@@ -26,16 +30,9 @@ public class DataService {
     }
 
     public List<Cochera> getCocheras() {
-        final ParkingApi api;
+        RetrofitInstance apiHelper = new RetrofitInstance();
 
-        Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:3000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-        api = retrofit.create(ParkingApi.class);
-
-        Call<List<Cochera>> cocherasArray = api.getCocheras();
+        Call<List<Cochera>> cocherasArray = apiHelper.api.getCocheras();
         cocherasArray.enqueue(new Callback<List<Cochera>>() {
             @Override
             public void onResponse(Call<List<Cochera>> call, Response<List<Cochera>> response) {
@@ -51,18 +48,73 @@ public class DataService {
             }
         });
 
-        Log.d("Wiwi", String.valueOf(cocheraList.size()));
         return cocheraList;
     }
 
-    public ArrayList<Devslopes> getBootcampLocationsWithin10MilesOfZip(int zipcode) {
 
-        getCocheras();
-        ArrayList<Devslopes> list = new ArrayList<>();
-        list.add(new Devslopes(-18.003081f, -70.24018f, "Parking 1", "Bonito", "slo"));
-        list.add(new Devslopes(-18.003081f, -70.233072f, "Parking 2", "Masomenos", "slo"));
-        list.add(new Devslopes(-18.002256f, -70.233554f, "Parking 3", "Horrible", "slo"));
-        list.add(new Devslopes(-17.998759f, -70.238729f, "Parking 4", "Calamitoso", "slo"));
-        return list;
+    public Cliente getCliente(int ClienteId) {
+
+        retrofitInstance = new RetrofitInstance();
+
+        Call<Cliente> callCliente = retrofitInstance.api.getCliente(ClienteId);
+
+        callCliente.enqueue(new Callback<Cliente>() {
+            @Override
+            public void onResponse(Call<Cliente> call, Response<Cliente> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    Cliente clientes = response.body();
+                    cliente = clientes;
+                    Log.d("Cliente DataService", String.valueOf(cliente));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Cliente> call, Throwable t) {
+
+            }
+
+        });
+
+        return cliente;
+    }
+
+    public List<Servicio> getServicios(int cochera_id) {
+
+        retrofitInstance = new RetrofitInstance();
+
+        Call<List<Servicio>> callServicio = retrofitInstance.api.getServicios(cochera_id);
+        callServicio.enqueue(new Callback<List<Servicio>>() {
+            @Override
+            public void onResponse(Call<List<Servicio>> call, Response<List<Servicio>> response) {
+                if (response.isSuccessful()) {
+                    List<Servicio> servicios = response.body();
+                    servicioList.addAll(servicios);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Servicio>> call, Throwable t) {
+                Log.e("Wiwi", t.getLocalizedMessage());
+            }
+        });
+
+        return servicioList;
+    }
+
+    public void setReserva(Reserva reserva) {
+//        RetrofitInstance retrofitInstance = new RetrofitInstance();
+
+        retrofitInstance = new RetrofitInstance();
+        Call<Reserva> callReserva = retrofitInstance.api.setReserva(reserva);
+        callReserva.enqueue(new Callback<Reserva>() {
+            @Override
+            public void onResponse(Call<Reserva> call, Response<Reserva> response) {
+            }
+
+            @Override
+            public void onFailure(Call<Reserva> call, Throwable t) {
+
+            }
+        });
     }
 }

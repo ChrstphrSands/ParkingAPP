@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private MarkerOptions userMarker;
@@ -69,26 +69,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Google
                 .commit();
         }
 
-//        final EditText zipText = view.findViewById(R.id.zip_text);
-//        zipText.setOnKeyListener(new View.OnKeyListener() {
-//
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER) {
-//                    String text = zipText.getText().toString();
-//                    int zip = Integer.parseInt(text);
-//
-//                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//
-//                    imm.hideSoftInputFromWindow(zipText.getWindowToken(), 0);
-//
-//                    showList();
-//                    updateMapForZip(zip);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
         hideList();
         return view;
     }
@@ -108,7 +88,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Google
         try {
             Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude,latLng.longitude, 1);
-            // int zip = Integer.parseInt(addresses.get(0).getPostalCode());
             updateMap(23000);
         } catch (IOException exception){
 
@@ -118,30 +97,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Google
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
     }
 
-    private void updateMapForZip(int zipcode) {
-
-        ArrayList<Devslopes> locations = DataService.getInstance().getBootcampLocationsWithin10MilesOfZip(zipcode);
-
-        for (int x = 0; x < locations.size(); x++) {
-            Devslopes loc = locations.get(x);
-            MarkerOptions marker = new MarkerOptions().position(new LatLng(loc.getLatitude(),loc.getLongitude()));
-            marker.title(loc.getLocationTitle());
-            marker.snippet(loc.getLocationAddress());
-            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
-            mMap.addMarker(marker);
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker mark) {
-                    if (mark.equals(mark)) {
-                        Marker marker1;
-                        showList();
-                    }
-                    return false;
-                }
-            });
-        }
-    }
-
     private void updateMap(int zipcode) {
 
         hideList();
@@ -149,7 +104,13 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Google
 
         for (int x = 0; x < cocheras.size(); x++) {
             Cochera coch = cocheras.get(x);
-            MarkerOptions marker = new MarkerOptions().position(new LatLng(coch.getLatitud(),coch.getLongitud()));
+            Double lat = Double.valueOf(coch.getLatitud());
+            Double lng = Double.valueOf(coch.getLongitud());
+
+            Log.d("Latitud", String.valueOf(lat));
+            Log.d("Longitud", String.valueOf(lng));
+
+            MarkerOptions marker = new MarkerOptions().position(new LatLng(lat, lng));
             marker.title(coch.getNombre());
             marker.snippet(coch.getDescripcion());
             marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
@@ -173,11 +134,5 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Google
 
     private void showList() {
         getActivity().getSupportFragmentManager().beginTransaction().show(mListFragment).commit();
-    }
-
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return true;
     }
 }
