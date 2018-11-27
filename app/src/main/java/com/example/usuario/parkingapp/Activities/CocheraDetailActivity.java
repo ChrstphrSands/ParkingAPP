@@ -57,7 +57,7 @@ public class CocheraDetailActivity extends AppCompatActivity implements View.OnC
 
         Log.d("Servicios", mServicios.toString());
 
-        cliente = DataService.getInstance().getCliente(4);
+        cliente = DataService.getInstance().getCliente(2);
 
         Log.d("CocheraDetailActivity", String.valueOf(cliente));
 

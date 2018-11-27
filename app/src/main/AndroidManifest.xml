@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.example.usuario.parkingapp">
 
     <!--
@@ -18,7 +19,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -33,7 +35,7 @@
             android:value="@string/google_maps_key"/>
 
         <activity
-            android:name=".Activities.MapsActivity"
+            android:name=".Activities.SigninActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -46,6 +48,12 @@
         <activity android:name=".Activities.ReservaActivity">
         </activity>
         <activity android:name=".Activities.QRActivity">
+        </activity>
+        <activity android:name=".Activities.LoginActivity">
+        </activity>
+        <activity android:name=".Activities.MapsActivity">
+        </activity>
+        <activity android:name=".ClienteDetailActivity">
         </activity>
     </application>
 

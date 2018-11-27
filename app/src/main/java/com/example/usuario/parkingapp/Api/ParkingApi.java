@@ -16,9 +16,20 @@ public interface ParkingApi {
     @GET("clientes/{id}")
     Call<Cliente> getCliente(@Path("id") int id);
 
+    @GET("clientes")
+    Call<List<Cliente>> getClienteDetail(@Query("UID") String UID);
+
+    @POST("clientes")
+    Call<Cliente> setCliente(@Body Cliente cliente);
+
+    @PUT("clientes/{id}")
+    Call<Cliente> updateCliente(@Path("id") int id, @Body Cliente cliente);
+
     @GET("servicios")
     Call<List<Servicio>> getServicios(@Query("cochera_id") int cochera_id);
 
     @POST("reservas")
     Call<Reserva> setReserva(@Body Reserva reserva);
+
+
 }

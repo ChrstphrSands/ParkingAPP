@@ -17,6 +17,7 @@ public class DataService {
     private List<Cochera> cocheraList = new ArrayList<>();
     private List<Servicio> servicioList = new ArrayList<>();
     private static DataService instance = new DataService();
+    private List<Cliente> clienteList = new ArrayList<>();
 
     private Cliente cliente = new Cliente();
     RetrofitInstance retrofitInstance = new RetrofitInstance();
@@ -51,6 +52,26 @@ public class DataService {
         return cocheraList;
     }
 
+    public List<Cliente> getClienteDetail(String UID) {
+        retrofitInstance = new RetrofitInstance();
+        Call<List<Cliente>> callCliente = retrofitInstance.api.getClienteDetail(UID);
+
+        callCliente.enqueue(new Callback<List<Cliente>>() {
+            @Override
+            public void onResponse(Call<List<Cliente>> call, Response<List<Cliente>> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    List<Cliente> clientes = response.body();
+                    clienteList.addAll(clientes);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Cliente>> call, Throwable t) {
+                Log.e("Error cliente", t.getLocalizedMessage());
+            }
+        });
+        return clienteList;
+    }
 
     public Cliente getCliente(int ClienteId) {
 
@@ -102,8 +123,6 @@ public class DataService {
     }
 
     public void setReserva(Reserva reserva) {
-//        RetrofitInstance retrofitInstance = new RetrofitInstance();
-
         retrofitInstance = new RetrofitInstance();
         Call<Reserva> callReserva = retrofitInstance.api.setReserva(reserva);
         callReserva.enqueue(new Callback<Reserva>() {
@@ -117,4 +136,23 @@ public class DataService {
             }
         });
     }
+
+    public void setCliente(Cliente cliente) {
+        retrofitInstance = new RetrofitInstance();
+        Call<Cliente> callCliente = retrofitInstance.api.setCliente(cliente);
+
+        callCliente.enqueue(new Callback<Cliente>() {
+            @Override
+            public void onResponse(Call<Cliente> call, Response<Cliente> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Cliente> call, Throwable t) {
+
+            }
+        });
+    }
+
+
 }

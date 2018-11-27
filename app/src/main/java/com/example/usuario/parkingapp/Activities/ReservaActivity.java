@@ -66,7 +66,7 @@ public class ReservaActivity extends AppCompatActivity implements View.OnClickLi
         cocheraId = getIntent().getIntExtra("cochera_id", 0);
         serviciosList = (List<Servicio>) getIntent().getSerializableExtra("servicios");
 
-        cliente = DataService.getInstance().getCliente(4);
+        cliente = DataService.getInstance().getCliente(2);
 
         vehiculosList = cliente.getVehiculos();
         Log.d("Vehiculos", String.valueOf(cliente));

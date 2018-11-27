@@ -11,7 +11,7 @@ public class RetrofitInstance {
 
     public RetrofitInstance() {
         Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BASE_URL_AZURE)
+            .baseUrl(BASE_URL_LOCAL_EMULADOR)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 

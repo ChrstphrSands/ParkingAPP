@@ -6,6 +6,23 @@ import java.util.List;
 
 public class Cliente {
 
+
+    public Cliente() {
+    }
+
+    public Cliente(String apellido, String direccion, int celular, int telefono, String nombre, int DNI, String
+        email, List<Vehiculo> vehiculos, String UID) {
+        this.apellido = apellido;
+        this.direccion = direccion;
+        this.celular = celular;
+        this.telefono = telefono;
+        this.nombre = nombre;
+        this.DNI = DNI;
+        this.email = email;
+        this.vehiculos = vehiculos;
+        this.UID = UID;
+    }
+
     @SerializedName("id")
     private int cliente_id;
 
@@ -29,6 +46,9 @@ public class Cliente {
 
     @SerializedName("Email")
     private String email;
+
+    @SerializedName("UID")
+    private String UID;
 
     @SerializedName("Vehiculo")
     private List<Vehiculo> vehiculos;
@@ -105,6 +125,14 @@ public class Cliente {
         return vehiculos;
     }
 
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
     @Override
     public String toString() {
         return
@@ -117,6 +145,7 @@ public class Cliente {
                 ",DNI = '" + DNI + '\'' +
                 ",email = '" + email + '\'' +
                 ",vehiculos = '" + vehiculos + '\'' +
+                ",UID = '" + UID + '\'' +
                 "}";
     }
 }
