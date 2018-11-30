@@ -32,7 +32,11 @@ public class QRActivity extends AppCompatActivity {
 
         qrValue = getIntent().getStringExtra("placa").trim();
 
+        generarQR(qrValue);
 
+    }
+
+    private void generarQR(String arValue) {
         qrgEncoder = new QRGEncoder(qrValue, null, QRGContents.Type.TEXT, 200);
 
         try {
@@ -41,6 +45,5 @@ public class QRActivity extends AppCompatActivity {
         } catch (WriterException e) {
             e.printStackTrace();
         }
-
     }
 }

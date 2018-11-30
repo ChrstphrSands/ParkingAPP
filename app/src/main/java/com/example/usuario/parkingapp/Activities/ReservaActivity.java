@@ -20,7 +20,11 @@ import com.example.usuario.parkingapp.R;
 import com.example.usuario.parkingapp.Services.DataService;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ReservaActivity extends AppCompatActivity implements View.OnClickListener {
@@ -66,7 +70,7 @@ public class ReservaActivity extends AppCompatActivity implements View.OnClickLi
         cocheraId = getIntent().getIntExtra("cochera_id", 0);
         serviciosList = (List<Servicio>) getIntent().getSerializableExtra("servicios");
 
-        cliente = DataService.getInstance().getCliente(2);
+        cliente = DataService.getInstance().getCliente(17);
 
         vehiculosList = cliente.getVehiculos();
         Log.d("Vehiculos", String.valueOf(cliente));
@@ -100,7 +104,7 @@ public class ReservaActivity extends AppCompatActivity implements View.OnClickLi
         btnConfirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reserva = new Reserva("12:00:00", 0.0, 1, vehiculoId, servicioId, "", "13:00:00", "");
+                reserva = new Reserva(horaEntrada, 0.0, 1, vehiculoId, servicioId, "", horaSalida, "");
                 saveData(reserva);
                 Intent intent = new Intent(ReservaActivity.this, QRActivity.class);
                 intent.putExtra("placa", placa);
@@ -117,12 +121,28 @@ public class ReservaActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    private String convertDate(String hora) {
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss a");
+        DateFormat outputFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = null;
+        String output = null;
+
+        try{
+            date = outputFormat.parse(hora);
+            output = outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return output;
+    }
+
     public void openTimeEntry(View view) {
         TimePickerPopWin pickerPopWin = new TimePickerPopWin.Builder(ReservaActivity.this, new TimePickerPopWin
             .OnTimePickedListener() {
             @Override
             public void onTimePickCompleted(int hour, int min, int sec, String meridium, String timeDesc) {
-                horaEntrada = timeDesc;
+                horaEntrada = convertDate(timeDesc);
                 txtIngreso.setText("Hora ingreso: " + timeDesc);
                 Toast.makeText(ReservaActivity.this, timeDesc, Toast.LENGTH_SHORT).show();
             }
@@ -143,7 +163,7 @@ public class ReservaActivity extends AppCompatActivity implements View.OnClickLi
             .OnTimePickedListener() {
             @Override
             public void onTimePickCompleted(int hour, int min, int sec, String meridium, String timeDesc) {
-                horaSalida = timeDesc;
+                horaSalida = convertDate(timeDesc);
                 txtSalida.setText("Hora salida: " + timeDesc);
                 Toast.makeText(ReservaActivity.this, timeDesc, Toast.LENGTH_SHORT).show();
             }

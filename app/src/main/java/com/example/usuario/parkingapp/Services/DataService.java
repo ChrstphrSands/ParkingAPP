@@ -1,6 +1,7 @@
 package com.example.usuario.parkingapp.Services;
 
 import android.util.Log;
+import com.example.usuario.parkingapp.Api.ParkingApi;
 import com.example.usuario.parkingapp.Api.RetrofitInstance;
 import com.example.usuario.parkingapp.Models.Cliente;
 import com.example.usuario.parkingapp.Models.Cochera;
@@ -10,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +33,10 @@ public class DataService {
     }
 
     public List<Cochera> getCocheras() {
-        RetrofitInstance apiHelper = new RetrofitInstance();
+//        RetrofitInstance apiHelper = new RetrofitInstance();
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
 
-        Call<List<Cochera>> cocherasArray = apiHelper.api.getCocheras();
+        Call<List<Cochera>> cocherasArray = parkingApi.getCocheras();
         cocherasArray.enqueue(new Callback<List<Cochera>>() {
             @Override
             public void onResponse(Call<List<Cochera>> call, Response<List<Cochera>> response) {
@@ -52,32 +55,35 @@ public class DataService {
         return cocheraList;
     }
 
-    public List<Cliente> getClienteDetail(String UID) {
-        retrofitInstance = new RetrofitInstance();
-        Call<List<Cliente>> callCliente = retrofitInstance.api.getClienteDetail(UID);
+    public Cliente getClienteDetail(String UID) {
+//        RetrofitInstance retrofitInstance = new RetrofitInstance();
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+        Call<Cliente> callCliente = parkingApi.getClienteDetail(UID);
 
-        callCliente.enqueue(new Callback<List<Cliente>>() {
+        callCliente.enqueue(new Callback<Cliente>() {
             @Override
-            public void onResponse(Call<List<Cliente>> call, Response<List<Cliente>> response) {
+            public void onResponse(Call<Cliente> call, Response<Cliente> response) {
                 if (response.isSuccessful() && response.code() == 200) {
-                    List<Cliente> clientes = response.body();
-                    clienteList.addAll(clientes);
+                    cliente = response.body();
+//                    clienteList.addAll(clientes);
+                    Log.d("Lista de clientes", String.valueOf(cliente));
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Cliente>> call, Throwable t) {
+            public void onFailure(Call<Cliente> call, Throwable t) {
                 Log.e("Error cliente", t.getLocalizedMessage());
             }
         });
-        return clienteList;
+        return cliente;
     }
 
     public Cliente getCliente(int ClienteId) {
 
-        retrofitInstance = new RetrofitInstance();
+//        retrofitInstance = new RetrofitInstance();
 
-        Call<Cliente> callCliente = retrofitInstance.api.getCliente(ClienteId);
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+        Call<Cliente> callCliente = parkingApi.getCliente(ClienteId);
 
         callCliente.enqueue(new Callback<Cliente>() {
             @Override
@@ -100,10 +106,10 @@ public class DataService {
     }
 
     public List<Servicio> getServicios(int cochera_id) {
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+//        retrofitInstance = new RetrofitInstance();
 
-        retrofitInstance = new RetrofitInstance();
-
-        Call<List<Servicio>> callServicio = retrofitInstance.api.getServicios(cochera_id);
+        Call<List<Servicio>> callServicio = parkingApi.getServicios(cochera_id);
         callServicio.enqueue(new Callback<List<Servicio>>() {
             @Override
             public void onResponse(Call<List<Servicio>> call, Response<List<Servicio>> response) {
@@ -123,8 +129,9 @@ public class DataService {
     }
 
     public void setReserva(Reserva reserva) {
-        retrofitInstance = new RetrofitInstance();
-        Call<Reserva> callReserva = retrofitInstance.api.setReserva(reserva);
+//        retrofitInstance = new RetrofitInstance();
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+        Call<Reserva> callReserva = parkingApi.setReserva(reserva);
         callReserva.enqueue(new Callback<Reserva>() {
             @Override
             public void onResponse(Call<Reserva> call, Response<Reserva> response) {
@@ -138,8 +145,9 @@ public class DataService {
     }
 
     public void setCliente(Cliente cliente) {
-        retrofitInstance = new RetrofitInstance();
-        Call<Cliente> callCliente = retrofitInstance.api.setCliente(cliente);
+//        retrofitInstance = new RetrofitInstance();
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+        Call<Cliente> callCliente = parkingApi.setCliente(cliente);
 
         callCliente.enqueue(new Callback<Cliente>() {
             @Override
@@ -154,5 +162,22 @@ public class DataService {
         });
     }
 
+    public void updateCliente(int id, Cliente cliente) {
+//        retrofitInstance = new RetrofitInstance();
+        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
+        Call<Cliente> callCliente = parkingApi.updateCliente(id, cliente);
+
+        callCliente.enqueue(new Callback<Cliente>() {
+            @Override
+            public void onResponse(Call<Cliente> call, Response<Cliente> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Cliente> call, Throwable t) {
+
+            }
+        });
+    }
 
 }
