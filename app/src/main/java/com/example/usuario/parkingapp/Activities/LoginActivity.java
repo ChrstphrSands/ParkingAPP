@@ -22,6 +22,10 @@ import com.example.usuario.parkingapp.R;
 //import com.facebook.login.LoginResult;
 //import com.facebook.login.widget.LoginButton;
 import com.example.usuario.parkingapp.Services.DataService;
+import com.facebook.*;
+import com.facebook.login.Login;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,6 +34,8 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,17 +53,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
+    private Button loginButton;
+    private LoginButton facebookButton;
+    private String email;
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    RetrofitInstance retrofitInstance;
-
-    String currentUser;
-    //    private CallbackManager mCallbackManager;
+    private RetrofitInstance retrofitInstance;
+    private ParkingApi parkingApi;
+    private List<Cliente> mClientes;
+    private String currentUser;
+    private CallbackManager mCallbackManager;
 
     private Cliente cliente;
     private List<Vehiculo> vehiculos = new ArrayList<>();
     private List<Cliente> clientes;
+    private boolean exists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +82,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
         findViewById(R.id.googleSignInButton).setOnClickListener(this);
-        //        findViewById(R.id.facebookSignInButton).setOnClickListener(this);
+        findViewById(R.id.facebookSignInButton).setOnClickListener(this);
+        findViewById(R.id.login_button).setOnClickListener(this);
 
-        //        LoginButton facebookButton = findViewById(R.id.facebookSignInButton);
+        facebookButton = (LoginButton) findViewById(R.id.facebookSignInButton);
+
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -81,28 +95,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        //        mCallbackManager = CallbackManager.Factory.create();
-        //
-        //        facebookButton.setReadPermissions("email", "public_profile");
-        //        facebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-        //            @Override
-        //            public void onSuccess(LoginResult loginResult) {
-        //                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-        //                handleFacebookAccessToken(loginResult.getAccessToken());
-        //            }
-        //
-        //            @Override
-        //            public void onCancel() {
-        //                Log.d(TAG, "facebook:onCancel");
-        //                updateUI(null);
-        //            }
-        //
-        //            @Override
-        //            public void onError(FacebookException error) {
-        //                Log.d(TAG, "facebook:onError", error);
-        //                updateUI(null);
-        //            }
-        //        });
+        mCallbackManager = CallbackManager.Factory.create();
+
+        facebookButton.setReadPermissions("email", "public_profile", "user_friends");
+
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest
+            .GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                JSONObject jsonObject = response.getJSONObject();
+                try {
+                    email = jsonObject.getString("email");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        facebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                updateUI(null);
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                updateUI(null);
+            }
+        });
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -111,6 +139,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onStart() {
         super.onStart();
+
+        parkingApi = RetrofitInstance.createService(ParkingApi.class);
+
+        Call<List<Cliente>> callCliente = parkingApi.getClientes();
+
+        callCliente.enqueue(new Callback<List<Cliente>>() {
+            @Override
+            public void onResponse(Call<List<Cliente>> call, Response<List<Cliente>> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    mClientes = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Cliente>> call, Throwable t) {
+                Log.e("Error cliente", t.getLocalizedMessage());
+            }
+        });
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
@@ -225,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
 
-        //        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
@@ -244,26 +291,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                         currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                        ParkingApi parkingApi = RetrofitInstance.createService(ParkingApi.class);
-                        Call<Cliente> callCliente = parkingApi.getClienteDetail(currentUser);
+                        exists = false;
 
-                        callCliente.enqueue(new Callback<Cliente>() {
-                            @Override
-                            public void onResponse(Call<Cliente> call, Response<Cliente> response) {
-                                if (response.isSuccessful() && response.code() == 200) {
-                                    Cliente cliente = response.body();
-                                    if (cliente == null) {
-                                        cliente = new Cliente(acct.getFamilyName(), "", 0, 0, acct.getDisplayName(), 0, acct.getEmail(), vehiculos, currentUser);
-                                        saveCliente(cliente);
-                                    }
-                                }
+                        for (Cliente cli : mClientes) {
+                            if (cli.getUID().equals(currentUser)) {
+                                exists = true;
+                                break;
                             }
+                        }
 
-                            @Override
-                            public void onFailure(Call<Cliente> call, Throwable t) {
-                                Log.e("Error cliente", t.getLocalizedMessage());
-                            }
-                        });
+                        if (exists == false) {
+                            cliente = new Cliente(acct.getFamilyName(), "", 0, 0, acct.getDisplayName(), 0, acct.getEmail(), vehiculos, currentUser);
+                            saveCliente(cliente);
+                        }
 
                         startActivity(intent);
                         updateUI(user);
@@ -279,32 +319,53 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
     }
 
-    //    private void handleFacebookAccessToken(AccessToken token) {
-    //        Log.d(TAG, "handleFacebookAccessToken:" + token);
-    //        // showProgressDialog();
-    //
-    //        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-    //        mAuth.signInWithCredential(credential)
-    //            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-    //                @Override
-    //                public void onComplete(@NonNull Task<AuthResult> task) {
-    //                    if (task.isSuccessful()) {
-    //                        // Sign in success, update UI with the signed-in user's information
-    //                        Log.d(TAG, "signInWithCredential:success");
-    //                        FirebaseUser user = mAuth.getCurrentUser();
-    //                        updateUI(user);
-    //                    } else {
-    //                        // If sign in fails, display a message to the user.
-    //                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-    //                        Toast.makeText(LoginActivity.this, "Authentication failed.",
-    //                            Toast.LENGTH_SHORT).show();
-    //                        updateUI(null);
-    //                    }
-    //
-    //                    // hideProgressDialog();
-    //                }
-    //            });
-    //    }
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+        // showProgressDialog();
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                        exists = false;
+
+                        for (Cliente cli : mClientes) {
+                            if (cli.getUID().equals(currentUser)) {
+                                exists = true;
+                                break;
+                            }
+                        }
+
+                        Profile profile = Profile.getCurrentProfile();
+
+
+                        if (exists == false) {
+                            cliente = new Cliente(profile.getLastName(), "", 0, 0, profile.getFirstName(), 0, email,
+                                vehiculos, currentUser);
+                            saveCliente(cliente);                        }
+
+                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                        startActivity(intent);updateUI(user);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show();
+                        updateUI(null);
+                    }
+
+                    // hideProgressDialog();
+                }
+            });
+    }
 
     private void saveCliente(Cliente cliente) {
         DataService.getInstance().setCliente(cliente);
@@ -317,8 +378,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (i == R.id.googleSignInButton) {
             signInWithGoogle();
-            //        } else if (i == R.id.facebookSignInButton) {
-            //
+        } else if (i == R.id.login_button) {
+            facebookButton.performClick();
         }
     }
 }

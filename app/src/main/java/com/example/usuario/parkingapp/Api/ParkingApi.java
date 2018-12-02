@@ -13,6 +13,9 @@ public interface ParkingApi {
     @GET("cocheras")
     Call<List<Cochera>> getCocheras();
 
+    @GET("clientes")
+    Call<List<Cliente>> getClientes();
+
     @GET("clientes/{id}")
     Call<Cliente> getCliente(@Path("id") int id);
 
